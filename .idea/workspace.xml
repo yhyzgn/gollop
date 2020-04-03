@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="19e8c968-cc38-40fc-a255-30cdd1c7fa43" name="Default Changelist" comment="" />
+    <list default="true" id="19e8c968-cc38-40fc-a255-30cdd1c7fa43" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/yhyzgn.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gollop.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/errs.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/extra.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gollop.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gollop_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/options.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/status.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="GOROOT" path="/usr/local/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
   </component>
   <component name="ProjectId" id="1a1plWxpz6weU5n6seuYC7jwWkD" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
