@@ -203,14 +203,11 @@ func (p *Pool) get(ctx context.Context, strategy connRequestStrategy) (Connector
 			return nil, ErrBadConn
 		}
 
-		// 检查当前连接的锁，确保连接已使用完成，并且无错误发生
-		cn.GetLocker().Lock()
-		err := cn.GetLastErr()
-		cn.GetLocker().Unlock()
-
-		if err != nil {
+		// 检查连接错误发生，舍弃错误连接，重新获取连接
+		if err := cn.GetLastErr(); err != nil {
 			_ = p.closeConn(cn)
-			return nil, ErrBadConn
+			// 递归重新获取
+			return p.get(ctx, strategy)
 		}
 		return cn, nil
 	}

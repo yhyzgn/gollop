@@ -22,6 +22,7 @@ package gollop
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"net"
@@ -59,10 +60,6 @@ type testConn struct {
 
 func (t *testConn) CreatedAt() time.Time {
 	return t.createdAt
-}
-
-func (t *testConn) GetLocker() sync.Locker {
-	return t
 }
 
 func (t *testConn) SetInUse(inUse bool) {
@@ -112,7 +109,7 @@ func newClient() *client {
 				fmt.Println("归还连接：" + (cn.(*testConn)).code)
 			}),
 			OnClose(func(cn Connector) {
-				fmt.Println("正在关闭连接：" + (cn.(*testConn)).code)
+				fmt.Println("正在关闭连接："+(cn.(*testConn)).code, cn.GetLastErr())
 			}),
 		),
 	}
@@ -138,6 +135,7 @@ func TestNew(t *testing.T) {
 	// 首次获取连接，用完及时归还
 	cn := c.get()
 	fmt.Println(cn)
+	cn.lastErr = errors.New("错误测试")
 	c.release(cn)
 
 	// 协程，模拟异步获取连接，并归还

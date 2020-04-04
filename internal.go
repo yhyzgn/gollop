@@ -22,7 +22,6 @@ package gollop
 
 import (
 	"io"
-	"sync"
 	"time"
 )
 
@@ -33,10 +32,9 @@ type Pooler interface {
 
 // 连接器接口
 type Connector interface {
-	io.Closer               // 可关闭
-	CreatedAt() time.Time   // 连接创建时间
-	SetInUse(inUse bool)    // 设置连接使用状态
-	IsInUse() bool          // 获取连接使用状态
-	GetLocker() sync.Locker // 获取连接器锁
-	GetLastErr() error      // 获取连接器错误信息
+	io.Closer             // 可关闭
+	CreatedAt() time.Time // 连接创建时间
+	SetInUse(inUse bool)  // 设置连接使用状态
+	IsInUse() bool        // 获取连接使用状态
+	GetLastErr() error    // 获取连接器错误信息
 }
