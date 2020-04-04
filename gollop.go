@@ -62,6 +62,8 @@ func New(ops ...Options) *Pool {
 		stop:         cancel,
 	}
 
+	// 创建初始化连接
+	go pl.openInitialConnections()
 	// 协程监视创建连接
 	go pl.connectionOpener(ctx)
 	// 协程定时清理过时连接
@@ -311,6 +313,9 @@ func (p *Pool) nextRequestKeyLocked() int64 {
 	return current
 }
 
+// 初始化时创建一定量的连接
+//
+// 不超过最大空闲数量
 func (p *Pool) openInitialConnections() {
 	maxIdle := p.maxIdle()
 	initIdle := p.opt.initIdle
