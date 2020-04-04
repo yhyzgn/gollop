@@ -323,7 +323,10 @@ func (p *Pool) openInitialConnections() {
 		initIdle = maxIdle
 	}
 
+	initIdle -= p.numOpened
 	for initIdle > 0 {
+		// 已打开数量先自增（因为创建连接可能涉及异步操作），如果连接创建失败再还原即可
+		p.numOpened++
 		initIdle--
 		if p.closed {
 			return
