@@ -259,12 +259,9 @@ func (p *Pool) get(ctx context.Context, strategy connRequestStrategy) (Connector
 			}
 
 			// 只分配无错误发生过的连接
-			p.mu.Lock()
-			err := ret.conn.GetLastErr()
-			p.mu.Unlock()
-
-			if err != nil {
-				return nil, ErrBadConn
+			if err := ret.conn.GetLastErr(); err != nil {
+				// 递归重新获取
+				return p.get(ctx, strategy)
 			}
 			return ret.conn, nil
 		}
