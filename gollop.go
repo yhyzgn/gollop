@@ -104,7 +104,7 @@ func (p *Pool) NewWithContext(ctx context.Context) (Connector, error) {
 
 // 归还一个连接
 func (p *Pool) Put(cn Connector) {
-	p.PutWithError(cn, nil)
+	p.PutWithError(cn, cn.GetLastErr())
 }
 
 // 归还一个连接，可能是无效连接
@@ -418,7 +418,7 @@ func (p *Pool) putConn(cn Connector, err error) {
 
 	cn.SetInUse(false)
 
-	if err == ErrBadConn {
+	if err != nil {
 		// 当前归还的连接为错误连接，舍弃
 		// 并检查空闲连接池
 		p.shouldOpenNewConnections()
