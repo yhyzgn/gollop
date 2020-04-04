@@ -42,5 +42,5 @@ const (
 var (
 	now                = time.Now         // right now
 	connRequestSize    = 1000000          // 请求队列大小
-	defaultMaxIdleConn = runtime.NumCPU() // 默认最大空闲数量
+	defaultMaxIdleConn = 4 * runtime.NumCPU() // 默认最大空闲数量
 )

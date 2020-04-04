@@ -100,11 +100,13 @@ func newClient() *client {
 				if err != nil {
 					return nil, err
 				}
-				return &testConn{
+				conn := &testConn{
 					code:      randString(16),
 					conn:      cn,
 					createdAt: now(),
-				}, nil
+				}
+				fmt.Println("创建连接：" + conn.code)
+				return conn, nil
 			}),
 			OnPut(func(cn Connector) {
 				fmt.Println("归还连接：" + (cn.(*testConn)).code)

@@ -311,6 +311,22 @@ func (p *Pool) nextRequestKeyLocked() int64 {
 	return current
 }
 
+func (p *Pool) openInitialConnections() {
+	maxIdle := p.maxIdle()
+	initIdle := p.opt.initIdle
+	if initIdle > maxIdle {
+		initIdle = maxIdle
+	}
+
+	for initIdle > 0 {
+		initIdle--
+		if p.closed {
+			return
+		}
+		p.openerCh <- struct{}{}
+	}
+}
+
 // 检查是否需要创建新连接
 //
 // 创建请求的数量不能超过允许的最大数量
@@ -456,7 +472,7 @@ func (p *Pool) putConnLocked(cn Connector, err error) bool {
 		}
 	} else if err == nil && !p.closed {
 		// 如果连接池未满，则把连接归还到连接池
-		if len(p.freeConn) < p.maxIdleConnLocked() {
+		if len(p.freeConn) < p.maxIdle() {
 			p.freeConn = append(p.freeConn, cn)
 			return true
 		}
@@ -466,7 +482,7 @@ func (p *Pool) putConnLocked(cn Connector, err error) bool {
 }
 
 // 获取最大空闲连接数量
-func (p *Pool) maxIdleConnLocked() int {
+func (p *Pool) maxIdle() int {
 	n := p.opt.maxIdle
 	switch {
 	case n < 0:

@@ -30,9 +30,10 @@ type Options func(*options)
 
 type options struct {
 	waitTimeout     time.Duration                                // 获取连接时的等待超时时长，默认 6s
-	maxIdle         int                                          // 最大空闲数量，>= defaultMaxIdleConn = runtime.NumCPU()
+	maxIdle         int                                          // 最大空闲数量，默认 defaultMaxIdleConn = 4 * runtime.NumCPU()
+	initIdle        int                                          // 初始化时需创建的空闲数量，<= maxIdle，默认 runtime.NumCPU()
 	maxOpen         int                                          // 最大连接数量，0 表示不限制，默认 10 * runtime.NumCPU()
-	maxLifetime     time.Duration                                // 连接生命时长，<= 0 表示永不过期
+	maxLifetime     time.Duration                                // 连接生命时长，<= 0 时表示永不过期
 	cleanerInterval time.Duration                                // 连接清理器执行间隔时长，>= 2s 默认 2s
 	dialer          func(ctx context.Context) (Connector, error) // 具体连接操作实现
 	onPut           func(connector Connector)                    // 连接回收回调
@@ -44,6 +45,7 @@ func defOptions() *options {
 	return &options{
 		waitTimeout: 6 * time.Second,
 		maxIdle:     defaultMaxIdleConn,
+		initIdle:    runtime.NumCPU(),
 		maxOpen:     10 * runtime.NumCPU(),
 	}
 }
@@ -59,10 +61,19 @@ func WaitTimeout(timeout time.Duration) Options {
 
 // 设置最大空闲连接数量
 //
-// >= defaultMaxIdleConn = runtime.NumCPU()
+// 默认 defaultMaxIdleCon = 4 * runtime.NumCPU()
 func MaxIdle(maxIdle int) Options {
 	return func(o *options) {
 		o.maxIdle = maxIdle
+	}
+}
+
+// 初始化时需创建的空闲数量
+//
+// <= maxIdle，默认 runtime.NumCPU()
+func InitIdle(initIdle int) Options {
+	return func(o *options) {
+		o.initIdle = initIdle
 	}
 }
 
