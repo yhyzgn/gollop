@@ -62,7 +62,7 @@ func (t *testConn) CreatedAt() time.Time {
 	return t.createdAt
 }
 
-func (t *testConn) SetInUse(inUse bool) {
+func (t *testConn) InUse(inUse bool) {
 	t.inUse = inUse
 }
 
@@ -70,7 +70,7 @@ func (t *testConn) IsInUse() bool {
 	return t.inUse
 }
 
-func (t *testConn) GetLastErr() error {
+func (t *testConn) Err() error {
 	return t.lastErr
 }
 
@@ -109,7 +109,7 @@ func newClient() *client {
 				fmt.Println("归还连接：" + (cn.(*testConn)).code)
 			}),
 			OnClose(func(cn Connector) {
-				fmt.Println("正在关闭连接："+(cn.(*testConn)).code, cn.GetLastErr())
+				fmt.Println("正在关闭连接："+(cn.(*testConn)).code, cn.Err())
 			}),
 		),
 	}

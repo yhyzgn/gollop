@@ -104,7 +104,7 @@ func (p *Pool) NewWithContext(ctx context.Context) (Connector, error) {
 
 // 归还一个连接
 func (p *Pool) Put(cn Connector) {
-	p.PutWithError(cn, cn.GetLastErr())
+	p.PutWithError(cn, cn.Err())
 }
 
 // 归还一个连接，可能是无效连接
@@ -194,7 +194,7 @@ func (p *Pool) get(ctx context.Context, strategy connRequestStrategy) (Connector
 		// 从空闲连接池中取
 		cn := p.freeConn[0]
 		p.freeConn = p.freeConn[1:]
-		cn.SetInUse(true)
+		cn.InUse(true)
 		p.mu.Unlock()
 
 		// 检查取出的连接是否超时
@@ -204,10 +204,10 @@ func (p *Pool) get(ctx context.Context, strategy connRequestStrategy) (Connector
 		}
 
 		// 检查连接错误发生，舍弃错误连接，重新获取连接
-		if err := cn.GetLastErr(); err != nil {
+		if err := cn.Err(); err != nil {
 			_ = p.closeConn(cn)
 			// 递归重新获取
-			return p.get(ctx, strategy)
+			return nil, ErrBadConn
 		}
 		return cn, nil
 	}
@@ -259,9 +259,9 @@ func (p *Pool) get(ctx context.Context, strategy connRequestStrategy) (Connector
 			}
 
 			// 只分配无错误发生过的连接
-			if err := ret.conn.GetLastErr(); err != nil {
-				// 递归重新获取
-				return p.get(ctx, strategy)
+			if err := ret.conn.Err(); err != nil {
+				_ = p.closeConn(ret.conn)
+				return nil, ErrBadConn
 			}
 			return ret.conn, nil
 		}
@@ -285,7 +285,7 @@ func (p *Pool) get(ctx context.Context, strategy connRequestStrategy) (Connector
 
 	// 使用状态
 	p.mu.Lock()
-	cn.SetInUse(true)
+	cn.InUse(true)
 	p.mu.Unlock()
 
 	return cn, nil
@@ -410,7 +410,7 @@ func (p *Pool) putConn(cn Connector, err error) {
 		return
 	}
 
-	cn.SetInUse(false)
+	cn.InUse(false)
 
 	if err != nil {
 		// 当前归还的连接为错误连接，舍弃
@@ -463,7 +463,7 @@ func (p *Pool) putConnLocked(cn Connector, err error) bool {
 		// 然后把该请求从队列中移除
 		delete(p.connRequests, reqKey)
 		if err == nil {
-			cn.SetInUse(true)
+			cn.InUse(true)
 			if req != nil {
 				req <- connRequest{
 					conn: cn,
